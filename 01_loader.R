@@ -29,14 +29,9 @@ data <- data %>% mutate(Year=as.double(substr(YYYYMMDD,1,4)),Month=as.double(sub
 #calculate mean over all stations
 data <- data %>% group_by(YYYYMMDD) %>% summarise(TN=mean(TN),TX=mean(TX),GT=mean(Temp))
 GTq=quantile(data$GT,c(0,0.1,0.9,1),na.rm=FALSE,type = 8)
-#GTq[1]=GTq[1]-.00005
 data <- data %>% mutate(category=cut(GT, breaks=GTq, labels=c("Laag","Middel","Hoog")))
 data <- data %>% mutate(Datum=ymd(YYYYMMDD),Year=year(Datum))
 p <- ggplot(data,aes(x=yday(Datum),y=GT, color=category))+geom_point()+facet_wrap('Year')
 p <- p+scale_color_manual(breaks=c(GTq[1],GTq[2],GTq[3]),values=c('#52a1cc','#7b8736','#d62e01'))
 p <- p+ggtitle('Gemiddelde temperatuur over alle weerstations')+labs(subtitle = "color based of terciles 10%,90%",caption = "Datasource: KNMI")+ xlab("Dag")+ylab("Gem.temp")
 p
-
-
-data <- data1 %>% group_by(YYYYMMDD,category)
-data_tally <- data %>% group_by(Year) %>% summarise(Count=n())
